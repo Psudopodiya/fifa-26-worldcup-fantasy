@@ -1,9 +1,11 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
-// Singleton for client components
-let _client: ReturnType<typeof createSupabaseClient> | null = null
+// Singleton for client components — typed as any so untyped table queries don't resolve to never
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _client: any = null
 
-export function createClient() {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function createClient(): any {
   if (!_client) {
     _client = createSupabaseClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
