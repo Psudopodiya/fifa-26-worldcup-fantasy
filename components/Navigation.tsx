@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { useClerk } from '@clerk/nextjs'
 import { clsx } from 'clsx'
 import {
   LayoutDashboard, Trophy, Shield, ArrowLeftRight,
@@ -22,12 +22,11 @@ const NAV = [
 export default function Navigation({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname()
   const router   = useRouter()
-  const supabase = createClient()
+  const { signOut } = useClerk()
 
-  async function signOut() {
-    await supabase.auth.signOut()
+  async function handleSignOut() {
+    await signOut()
     router.push('/login')
-    router.refresh()
   }
 
   return (
@@ -85,7 +84,7 @@ export default function Navigation({ isAdmin }: { isAdmin: boolean }) {
 
           {/* Sign out */}
           <button
-            onClick={signOut}
+            onClick={handleSignOut}
             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-150 shrink-0 ml-1"
             title="Sign out"
           >

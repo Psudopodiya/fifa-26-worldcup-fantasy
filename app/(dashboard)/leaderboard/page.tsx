@@ -1,14 +1,18 @@
+import { auth } from '@clerk/nextjs/server'
 import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 
 export default async function LeaderboardPage() {
+  const { userId } = await auth()
+  if (!userId) redirect('/login')
+
   const supabase = createClient()
 
   const { data: settings } = await supabase.from('app_settings').select('key, value')
   const settingsMap = Object.fromEntries((settings ?? []).map(s => [s.key, s.value]))
   const currentMatchday = parseInt(settingsMap.current_matchday ?? '1')
 
-  const { data: { user } } = await supabase.auth.getUser()
-  const { data: myTeam }   = await supabase.from('teams').select('id').eq('user_id', user!.id).single()
+  const { data: myTeam }   = await supabase.from('teams').select('id').eq('user_id', userId).single()
 
   // All teams
   const { data: teams } = await supabase.from('teams').select('id, name, budget_remaining')

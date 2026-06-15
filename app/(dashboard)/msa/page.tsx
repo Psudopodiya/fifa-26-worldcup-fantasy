@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState, useCallback, useRef } from 'react'
+import { useAuth } from '@clerk/nextjs'
 import { createClient } from '@/lib/supabase/client'
 import type { MsaSession, MsaBid, Player, Team } from '@/lib/types'
 import { clsx } from 'clsx'
@@ -8,6 +9,7 @@ const INITIAL_TIMER = 30
 const BID_REFRESH   = 15
 
 export default function MsaPage() {
+  const { userId } = useAuth()
   const supabase = createClient()
   const [session, setSession]     = useState<MsaSession | null>(null)
   const [bids, setBids]           = useState<MsaBid[]>([])
@@ -20,9 +22,8 @@ export default function MsaPage() {
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   const load = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    const { data: t } = await supabase.from('teams').select('*').eq('user_id', user.id).single()
+    if (!userId) return
+    const { data: t } = await supabase.from('teams').select('*').eq('user_id', userId).single()
     setMyTeam(t); setIsAdmin(t?.is_admin ?? false)
 
     const { data: s } = await supabase
@@ -38,7 +39,7 @@ export default function MsaPage() {
         .eq('msa_session_id', s.id).order('created_at', { ascending: false })
       setBids(b ?? [])
     }
-  }, [supabase])
+  }, [supabase, userId])
 
   useEffect(() => { load() }, [load])
 

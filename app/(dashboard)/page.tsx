@@ -1,3 +1,4 @@
+import { auth } from '@clerk/nextjs/server'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
@@ -10,14 +11,14 @@ import {
 const POSITIONS = ['GK', 'DEF', 'MID', 'FWD'] as const
 
 export default async function DashboardPage() {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { userId } = await auth()
+  if (!userId) redirect('/login')
 
+  const supabase = createClient()
   const { data: team } = await supabase
     .from('teams')
     .select('*')
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .single()
 
   if (!team) {

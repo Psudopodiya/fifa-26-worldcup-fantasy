@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useAuth } from '@clerk/nextjs'
 import { createClient } from '@/lib/supabase/client'
 
 type Player = {
@@ -17,6 +18,7 @@ type Transfer = {
 }
 
 export default function TransfersPage() {
+  const { userId } = useAuth()
   const supabase = createClient()
   const [myTeam, setMyTeam]         = useState<any>(null)
   const [myPlayers, setMyPlayers]   = useState<Player[]>([])
@@ -35,14 +37,13 @@ export default function TransfersPage() {
 
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      if (!userId) return
 
       const [
         { data: team },
         { data: settings },
       ] = await Promise.all([
-        supabase.from('teams').select('*').eq('user_id', user.id).single(),
+        supabase.from('teams').select('*').eq('user_id', userId).single(),
         supabase.from('app_settings').select('key,value'),
       ])
 
@@ -77,7 +78,7 @@ export default function TransfersPage() {
       setLoading(false)
     }
     load()
-  }, [])
+  }, [userId])
 
   async function makeTransfer() {
     if (!outPlayer || !inPlayer || !myTeam) return

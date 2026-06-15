@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
+import { useAuth } from '@clerk/nextjs'
 import { createClient } from '@/lib/supabase/client'
 import type { Player, CaptainAssignment, SquadSelection, TournamentPhase } from '@/lib/types'
 import { clsx } from 'clsx'
@@ -7,6 +8,7 @@ import { clsx } from 'clsx'
 type PlayerWithSelection = Player & { is_starting: boolean; bench_order: number | null }
 
 export default function SquadPage() {
+  const { userId } = useAuth()
   const supabase = createClient()
   const [team, setTeam]           = useState<any>(null)
   const [players, setPlayers]     = useState<PlayerWithSelection[]>([])
@@ -18,10 +20,9 @@ export default function SquadPage() {
   const [loading, setLoading]     = useState(true)
 
   const load = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    if (!userId) return
 
-    const { data: t } = await supabase.from('teams').select('*').eq('user_id', user.id).single()
+    const { data: t } = await supabase.from('teams').select('*').eq('user_id', userId).single()
     setTeam(t)
 
     const { data: settings } = await supabase.from('app_settings').select('key,value')
@@ -63,7 +64,7 @@ export default function SquadPage() {
     setCaptain(cap)
 
     setLoading(false)
-  }, [supabase])
+  }, [supabase, userId])
 
   useEffect(() => { load() }, [load])
 

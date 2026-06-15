@@ -1,16 +1,17 @@
-import { createClient } from '@/lib/supabase/server'
+import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 import Navigation from '@/components/Navigation'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { userId } = await auth()
+  if (!userId) redirect('/login')
 
+  const supabase = createClient()
   const { data: team } = await supabase
     .from('teams')
     .select('is_admin')
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .single()
 
   return (
