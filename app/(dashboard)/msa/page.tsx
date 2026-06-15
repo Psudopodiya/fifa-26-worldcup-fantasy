@@ -24,7 +24,8 @@ export default function MsaPage() {
   const load = useCallback(async () => {
     if (!userId) return
     const { data: t } = await supabase.from('teams').select('*').eq('user_id', userId).single()
-    setMyTeam(t); setIsAdmin(t?.is_admin ?? false)
+    const team = t as any
+    setMyTeam(team); setIsAdmin(team?.is_admin ?? false)
 
     const { data: s } = await supabase
       .from('msa_sessions')
