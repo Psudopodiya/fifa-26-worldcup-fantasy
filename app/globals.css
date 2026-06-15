@@ -9,6 +9,13 @@
   body {
     @apply bg-gray-950 text-gray-100 antialiased;
   }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.gray.700') transparent;
+  }
+  *::-webkit-scrollbar { width: 4px; height: 4px; }
+  *::-webkit-scrollbar-track { background: transparent; }
+  *::-webkit-scrollbar-thumb { @apply bg-gray-700 rounded-full; }
 }
 
 @layer components {
@@ -16,7 +23,10 @@
     @apply bg-gray-900 border border-gray-800 rounded-xl p-4;
   }
   .btn-primary {
-    @apply bg-brand-500 hover:bg-brand-600 text-white font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-400 hover:to-brand-500
+           text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200
+           disabled:opacity-50 disabled:cursor-not-allowed
+           shadow-lg shadow-brand-500/20;
   }
   .btn-secondary {
     @apply bg-gray-800 hover:bg-gray-700 text-gray-100 font-semibold px-4 py-2 rounded-lg transition-colors;
@@ -28,4 +38,13 @@
   .badge-DEF { @apply badge-pos bg-blue-500/20   text-blue-400;   }
   .badge-MID { @apply badge-pos bg-green-500/20  text-green-400;  }
   .badge-FWD { @apply badge-pos bg-red-500/20    text-red-400;    }
+  .gradient-text {
+    @apply bg-gradient-to-r from-brand-300 to-brand-500 bg-clip-text text-transparent;
+  }
+  .input-field {
+    @apply w-full bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2.5
+           text-white placeholder-gray-500
+           focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
+           transition-all duration-150;
+  }
 }
