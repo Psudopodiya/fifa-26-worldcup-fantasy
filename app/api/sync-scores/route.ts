@@ -89,7 +89,6 @@ export async function POST(req: NextRequest) {
       is_captain: false, is_vice_captain: false,
       clean_sheet_active: cleanSheetActive,
       base_fantasy_points: 0,
-      created_at: '', updated_at: '',
     }
 
     const basePoints = calculateBasePoints(scoringInput)
