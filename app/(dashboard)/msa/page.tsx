@@ -27,18 +27,19 @@ export default function MsaPage() {
     const team = t as any
     setMyTeam(team); setIsAdmin(team?.is_admin ?? false)
 
-    const { data: s } = await supabase
+    const { data: sRaw } = await supabase
       .from('msa_sessions')
       .select('*, current_player:players!current_player_id(*)')
       .order('created_at', { ascending: false })
       .limit(1).single()
+    const s = sRaw as any
     setSession(s)
 
     if (s?.id) {
-      const { data: b } = await supabase
+      const { data: bRaw } = await supabase
         .from('msa_bids').select('*, team:teams(name)')
         .eq('msa_session_id', s.id).order('created_at', { ascending: false })
-      setBids(b ?? [])
+      setBids((bRaw as any) ?? [])
     }
   }, [supabase, userId])
 
